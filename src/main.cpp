@@ -11,7 +11,7 @@
 #define FILESYSTEM SPIFFS
 
 /* Time */
-ESP32Time esp32rtc; 
+ESP32Time esp32rtc;
 
 /* Display */
 #define PANEL_RES_X 64
@@ -50,7 +50,7 @@ void showStatus(String status)
 void stop()
 {
   showStatus("Restaring...");
-  delay(20000);
+  delay(5000);
   exit(1);
 }
 
@@ -78,6 +78,12 @@ void setupDisplay()
   dma_display->setBrightness8(128);
   dma_display->fillScreen(myWHITE);
   delay(500);
+  dma_display->fillScreen(myRED);
+  delay(500);
+  dma_display->fillScreen(myGREEN);
+  delay(500);
+  dma_display->fillScreen(myBLUE);
+  delay(500);
   dma_display->clearScreen();
 }
 
@@ -93,7 +99,7 @@ void setupTime()
   if (!getLocalTime(&timeinfo))
   {
     showStatus("Failed to obtain time");
-    esp32rtc.setTime(1609459200);
+    stop();
   }
   else
   {
@@ -132,7 +138,8 @@ void setupNetworking()
   delay(1000);
 }
 
-void setupStorage() {
+void setupStorage()
+{
   if (!SPIFFS.begin())
   {
     showStatus(F("SPIFFS Mount Failed"));
@@ -144,7 +151,7 @@ void setup()
 {
   Serial.begin(115200);
   Serial.println(F("Serial Started"));
-  
+
   setupStorage();
   setupDisplay();
   setupNetworking();
