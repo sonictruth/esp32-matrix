@@ -140,19 +140,25 @@ int32_t GIFSeekFile(GIFFILE *pFile, int32_t iPosition)
   return pFile->iPos;
 }
 
-void ShowGIF(char *name)
+void ShowGIF(char *name, int times)
 {
-  start_tick = millis();
 
-  if (gif.open(name, GIFOpenFile, GIFCloseFile, GIFReadFile, GIFSeekFile, GIFDraw))
+  int count = 0;
+
+  while (count < times)
   {
-    while (gif.playFrame(true, NULL))
+    start_tick = millis();
+    if (gif.open(name, GIFOpenFile, GIFCloseFile, GIFReadFile, GIFSeekFile, GIFDraw))
     {
-      if ((millis() - start_tick) > 8000)
+      while (gif.playFrame(true, NULL))
       {
-        break;
+        if ((millis() - start_tick) > 8000)
+        {
+          break;
+        }
       }
+      gif.close();
     }
-    gif.close();
+    count++;
   }
 }

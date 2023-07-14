@@ -1,22 +1,19 @@
 #include <SPIFFS.h>
 #include <ESP32-HUB75-MatrixPanel-I2S-DMA.h>
-#include <gif.h>
-#include <font.h>
 #include <AutoConnect.h>
 #include <WiFi.h>
-#include <AutoConnect.h>
 #include <ESP32Time.h>
+#include <scroll.h>
+#include <gif.h>
+// #include <fonts/Picopixel.h>
+#include <font.h>
 #include "time.h"
-
-#define FILESYSTEM SPIFFS
+#include "config.h"
 
 /* Time */
 ESP32Time esp32rtc;
 
 /* Display */
-#define PANEL_RES_X 64
-#define PANEL_RES_Y 32
-#define PANEL_CHAIN 1
 MatrixPanel_I2S_DMA *dma_display = nullptr;
 uint16_t myBLACK = dma_display->color565(0, 0, 0);
 uint16_t myWHITE = dma_display->color565(255, 255, 255);
@@ -37,13 +34,15 @@ void showStatus(String status)
   // int16_t  x1, y1;
   // uint16_t w, h;
   dma_display->setTextWrap(true);
-  dma_display->setTextColor(myGREEN, myBLACK);
+  dma_display->setTextColor(myDarkRED, myBLACK);
   dma_display->setFont(&Font4x5Fixed);
   dma_display->setTextSize(1);
   dma_display->setCursor(0, 4);
   // dma_display->getTextBounds(status, 0, 5, &x1, &y1, &w, &h);
-  dma_display->fillRect(0, 0, 64, 32, myDarkRED);
+  dma_display->fillRect(0, 0, 64, 32, myBLACK);
   dma_display->print(status);
+  dma_display->setFont();
+  dma_display->setTextWrap(false);
   delay(1500);
 }
 
@@ -72,6 +71,9 @@ void setupDisplay()
   mxconfig.latch_blanking = 3;
   mxconfig.i2sspeed = HUB75_I2S_CFG::HZ_15M;
   mxconfig.clkphase = false;
+#ifdef ENABLE_DOUBLE_BUFFER
+  mxconfig.double_buff = true;
+#endif
 
   dma_display = new MatrixPanel_I2S_DMA(mxconfig);
   dma_display->begin();
@@ -125,7 +127,7 @@ void setupNetworking()
   }
   else
   {
-    showStatus("Portal Error.");
+    showStatus("Portal Error");
     stop();
   }
 
@@ -152,17 +154,20 @@ void setup()
   Serial.begin(115200);
   Serial.println(F("Serial Started"));
 
-  setupStorage();
   setupDisplay();
+  setupStorage();
   setupNetworking();
   setupTime();
   GIFSetup();
 
   showStatus(F("Matrix OK"));
-  dma_display->fillScreen(myBLACK);
 }
 
 void loop()
 {
+  ShowGIF((char*)"/ww.gif", 1);
+  scrollText();
+
   showStatus(esp32rtc.getTime("%A,\n%B %d %Y \n%H:%M:%S"));
+  ShowGIF((char*)"/kill.gif", 3);
 }
