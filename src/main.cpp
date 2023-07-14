@@ -9,8 +9,9 @@
 #include "time.h"
 
 #define FILESYSTEM SPIFFS
+
 /* Time */
-ESP32Time esp32rtc; // offset in seconds GMT+1
+ESP32Time esp32rtc; 
 
 /* Display */
 #define PANEL_RES_X 64
@@ -131,20 +132,25 @@ void setupNetworking()
   delay(1000);
 }
 
-void setup()
-{
-  Serial.begin(115200);
-  Serial.println(F("Serial Started"));
-
+void setupStorage() {
   if (!SPIFFS.begin())
   {
     showStatus(F("SPIFFS Mount Failed"));
     stop();
   }
+}
+
+void setup()
+{
+  Serial.begin(115200);
+  Serial.println(F("Serial Started"));
+  
+  setupStorage();
   setupDisplay();
   setupNetworking();
   setupTime();
   GIFSetup();
+
   showStatus(F("Matrix OK"));
   dma_display->fillScreen(myBLACK);
 }
