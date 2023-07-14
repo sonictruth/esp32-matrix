@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "animatedgif.h": "c",
+        "typeinfo": "cpp",
+        "string": "cpp"
+    }
+}
