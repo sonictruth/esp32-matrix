@@ -1,3 +1,4 @@
+#pragma once
 #define FILESYSTEM SPIFFS
 #define PANEL_RES_X 64
 #define PANEL_RES_Y 32

@@ -9,7 +9,7 @@ File f;
 unsigned long start_tick = 0;
 extern MatrixPanel_I2S_DMA *dma_display;
 
-void GIFSetup()
+void setupGIF()
 {
   gif.begin(LITTLE_ENDIAN_PIXELS);
 }
@@ -140,7 +140,7 @@ int32_t GIFSeekFile(GIFFILE *pFile, int32_t iPosition)
   return pFile->iPos;
 }
 
-void ShowGIF(char *name, int times)
+void showGIF(char *name, int times)
 {
 
   int count = 0;

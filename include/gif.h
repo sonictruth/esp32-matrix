@@ -1,2 +1,3 @@
-void GIFSetup();
-void ShowGIF(char *name, int times);
+#pragma once
+void setupGIF();
+void showGIF(char *name, int times);

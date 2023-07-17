@@ -74,25 +74,22 @@ void setupDisplay()
 #ifdef ENABLE_DOUBLE_BUFFER
   mxconfig.double_buff = true;
 #endif
-
   dma_display = new MatrixPanel_I2S_DMA(mxconfig);
   dma_display->begin();
   dma_display->setBrightness8(128);
-  dma_display->fillScreen(myWHITE);
-  delay(500);
   dma_display->fillScreen(myRED);
-  delay(500);
+  delay(200);
   dma_display->fillScreen(myGREEN);
-  delay(500);
+  delay(200);
   dma_display->fillScreen(myBLUE);
-  delay(500);
+  delay(200);
   dma_display->clearScreen();
 }
 
 void setupTime()
 {
   showStatus("Syncing time");
-  const char *ntpServer = "pool.ntp.org";
+  const char *ntpServer = "time.cloudflare.com";
   struct tm timeinfo;
   const long gmtOffset_sec = 3600;
   const int daylightOffset_sec = 3600;
@@ -100,7 +97,7 @@ void setupTime()
 
   if (!getLocalTime(&timeinfo))
   {
-    showStatus("Failed to obtain time");
+    showStatus("Failed to get time");
     stop();
   }
   else
@@ -155,19 +152,19 @@ void setup()
   Serial.println(F("Serial Started"));
 
   setupDisplay();
-  setupStorage();
-  setupNetworking();
-  setupTime();
-  GIFSetup();
+  // setupStorage();
+  // setupNetworking();
+  // setupTime();
+  // setupGIF();
 
   showStatus(F("Matrix OK"));
 }
 
 void loop()
 {
-  ShowGIF((char*)"/ww.gif", 1);
-  scrollText();
+  scrollText("Hello", myBLUE);
 
-  showStatus(esp32rtc.getTime("%A,\n%B %d %Y \n%H:%M:%S"));
-  ShowGIF((char*)"/kill.gif", 3);
+  // showGIF((char*)"/ww.gif", 1);
+  scrollText(esp32rtc.getTime("It's %A, %B %d %Y \n%H:%M:%S"), myRED);
+  // ShowGIF((char*)"/kill.gif", 3);
 }
