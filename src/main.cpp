@@ -5,10 +5,10 @@
 #include <ESP32Time.h>
 #include <scroll.h>
 #include <gif.h>
-// #include <fonts/Picopixel.h>
 #include <font.h>
 #include "time.h"
 #include "config.h"
+#include "timeToEnglish.h"
 
 /* Time */
 ESP32Time esp32rtc;
@@ -31,15 +31,11 @@ HTTPClient http;
 
 void showStatus(String status)
 {
-  // int16_t  x1, y1;
-  // uint16_t w, h;
+  dma_display->clearScreen();
   dma_display->setTextWrap(true);
-  dma_display->setTextColor(myDarkRED, myBLACK);
-  dma_display->setFont(&Font4x5Fixed);
+  dma_display->setTextColor(myWHITE, myBLACK);
   dma_display->setTextSize(1);
-  dma_display->setCursor(0, 4);
-  // dma_display->getTextBounds(status, 0, 5, &x1, &y1, &w, &h);
-  dma_display->fillRect(0, 0, 64, 32, myBLACK);
+  dma_display->setCursor(0, 0);
   dma_display->print(status);
   dma_display->setFont();
   dma_display->setTextWrap(false);
@@ -56,7 +52,7 @@ void stop()
 bool atDetect(IPAddress &softapIP)
 {
   showStatus("Configure Wifi");
-  showStatus("Connect to\nMatrixPanel\nPassword\n12345678");
+  showStatus("AP:MatrixPanel\nPASS:\n12345678");
   return true;
 }
 
@@ -152,19 +148,20 @@ void setup()
   Serial.println(F("Serial Started"));
 
   setupDisplay();
-  // setupStorage();
-  // setupNetworking();
-  // setupTime();
-  // setupGIF();
+  setupStorage();
+  setupNetworking();
+  setupTime();
+  setupGIF();
 
   showStatus(F("Matrix OK"));
 }
 
 void loop()
 {
-  scrollText("Hello", myBLUE);
 
-  // showGIF((char*)"/ww.gif", 1);
-  scrollText(esp32rtc.getTime("It's %A, %B %d %Y \n%H:%M:%S"), myRED);
+  scrollText(String("a") + String("b"), myWHITE);
+
+  showGIF((char*)"/ww.gif", 1);
+  scrollText("dd", myRED);
   // ShowGIF((char*)"/kill.gif", 3);
 }
