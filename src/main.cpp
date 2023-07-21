@@ -1,3 +1,4 @@
+#include "config.h"
 #include <SPIFFS.h>
 #include <ESP32-HUB75-MatrixPanel-I2S-DMA.h>
 #include <AutoConnect.h>
@@ -5,10 +6,7 @@
 #include <ESP32Time.h>
 #include <scroll.h>
 #include <gif.h>
-#include <font.h>
-#include "time.h"
-#include "config.h"
-#include "timeToEnglish.h"
+#include "utils.h"
 
 /* Time */
 ESP32Time esp32rtc;
@@ -20,7 +18,6 @@ uint16_t myWHITE = dma_display->color565(255, 255, 255);
 uint16_t myRED = dma_display->color565(255, 0, 0);
 uint16_t myGREEN = dma_display->color565(0, 255, 0);
 uint16_t myBLUE = dma_display->color565(0, 0, 255);
-uint16_t myDarkRED = dma_display->color565(50, 0, 30);
 
 /* Wifi Manager */
 WebServer webServer;
@@ -44,7 +41,7 @@ void showStatus(String status)
 
 void stop()
 {
-  showStatus("Restaring...");
+  showStatus("Restaring");
   delay(5000);
   exit(1);
 }
@@ -72,7 +69,7 @@ void setupDisplay()
 #endif
   dma_display = new MatrixPanel_I2S_DMA(mxconfig);
   dma_display->begin();
-  dma_display->setBrightness8(128);
+  dma_display->setBrightness8(90);
   dma_display->fillScreen(myRED);
   delay(200);
   dma_display->fillScreen(myGREEN);
@@ -84,7 +81,7 @@ void setupDisplay()
 
 void setupTime()
 {
-  showStatus("Syncing time");
+  showStatus("Syncing");
   const char *ntpServer = "time.cloudflare.com";
   struct tm timeinfo;
   const long gmtOffset_sec = 3600;
@@ -104,7 +101,7 @@ void setupTime()
 
 void setupNetworking()
 {
-  showStatus("Connecting...");
+  showStatus("Connecting");
 
   PortalConfig.apid = "MatixPanel";
   PortalConfig.title = "Configure WiFi";
@@ -116,7 +113,7 @@ void setupNetworking()
 
   if (Portal.begin())
   {
-    showStatus("WIFI Connected");
+    showStatus("Connected");
   }
   else
   {
@@ -158,10 +155,7 @@ void setup()
 
 void loop()
 {
-
-  scrollText(String("a") + String("b"), myWHITE);
-
   showGIF((char*)"/ww.gif", 1);
-  scrollText("dd", myRED);
+  scrollText("another text containg red", myRED);
   // ShowGIF((char*)"/kill.gif", 3);
 }

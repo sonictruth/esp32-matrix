@@ -1,8 +1,7 @@
-#include <SPIFFS.h>
+#include "config.h"
 #include <ESP32-HUB75-MatrixPanel-I2S-DMA.h>
+#include <SPIFFS.h>
 #include <AnimatedGIF.h>
-
-#define FILESYSTEM SPIFFS
 
 AnimatedGIF gif;
 File f;

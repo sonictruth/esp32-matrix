@@ -1,3 +1,7 @@
+#pragma once
+#ifndef MainFont_H
+#define MainFont_H
+
 // Created by http://oleddisplay.squix.ch/ Consider a donation
 // In case of problems make sure that you are using the font file with the correct version!
 const uint8_t Creepster_Caps_Regular_25Bitmaps[] PROGMEM = {
@@ -197,3 +201,5 @@ const GFXglyph Creepster_Caps_Regular_25Glyphs[] PROGMEM = {
 };
 const GFXfont Creepster_Caps_Regular_25 PROGMEM = {
 (uint8_t  *)Creepster_Caps_Regular_25Bitmaps,(GFXglyph *)Creepster_Caps_Regular_25Glyphs,0x20, 0x7E, 30};
+
+#endif
