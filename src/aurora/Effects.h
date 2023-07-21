@@ -34,7 +34,6 @@
 #include <FastLED.h>
 
 /* ---------------------------- GLOBAL CONSTANTS ----------------------------- */
-
 extern GFXcanvas16 *canvas;
 const int MATRIX_CENTER_X = MATRIX_WIDTH / 2;
 const int MATRIX_CENTER_Y = MATRIX_HEIGHT / 2;

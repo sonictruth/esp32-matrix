@@ -9,17 +9,16 @@
 #include "./aurora/PatternInfinity.h"
 
 extern MatrixPanel_I2S_DMA *dma_display;
+extern GFXcanvas16 *canvas;
+
 Effects *effects;
-GFXcanvas16 *canvas;
 
 void scrollText(const String& text, uint16_t color)
 {
-    canvas = new GFXcanvas16(PANEL_RES_X, PANEL_RES_Y);
     effects = new Effects();
     effects->Setup();
     int16_t xOne, yOne;
     uint16_t w, h;
-
     PatternInfinity ps;
 
     unsigned long isAnimationDue = 0;
@@ -51,6 +50,5 @@ void scrollText(const String& text, uint16_t color)
         canvas->print(text);
         dma_display->drawRGBBitmap(0, 0, canvas->getBuffer(), PANEL_RES_X, PANEL_RES_Y);
     }
-    delete canvas;
     delete effects;
 }

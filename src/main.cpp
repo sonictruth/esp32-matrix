@@ -4,7 +4,8 @@
 #include <AutoConnect.h>
 #include <WiFi.h>
 #include <ESP32Time.h>
-#include <scroll.h>
+#include <scroll_text.h>
+#include <show_text.h>
 #include <gif.h>
 #include "utils.h"
 
@@ -13,6 +14,8 @@ ESP32Time esp32rtc;
 
 /* Display */
 MatrixPanel_I2S_DMA *dma_display = nullptr;
+GFXcanvas16 *canvas = nullptr;
+
 uint16_t myBLACK = dma_display->color565(0, 0, 0);
 uint16_t myWHITE = dma_display->color565(255, 255, 255);
 uint16_t myRED = dma_display->color565(255, 0, 0);
@@ -68,6 +71,7 @@ void setupDisplay()
   mxconfig.double_buff = true;
 #endif
   dma_display = new MatrixPanel_I2S_DMA(mxconfig);
+  canvas = new GFXcanvas16(PANEL_RES_X, PANEL_RES_Y);
   dma_display->begin();
   dma_display->setBrightness8(90);
   dma_display->fillScreen(myRED);
@@ -161,5 +165,7 @@ void loop()
   String time("The time is ");
   time += englishTime;
   scrollText(time, myRED);
-  // ShowGIF((char*)"/kill.gif", 3);
+  showText("Welcome to Matrix! This is a test");
+  showText(time);
+
 }
