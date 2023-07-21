@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <arduino.h>
 
-String timeToEnglish(int h, int m)
+void getTimeEnglish(char* result, int h, int m)
 {
   if (h > 12) {
     h = h - 12;
@@ -15,7 +15,7 @@ String timeToEnglish(int h, int m)
                       "twenty five", "twenty six", "twenty seven",
                       "twenty eight", "twenty nine",
                     };
-  char result[100];
+ 
   if (m == 0)
     sprintf(result, "%s o' clock", nums[h]);
 
@@ -41,5 +41,4 @@ String timeToEnglish(int h, int m)
     sprintf(result, "%s minutes to %s", nums[60 - m],
             nums[(h % 12) + 1]);
 
-  return String(result);
 }

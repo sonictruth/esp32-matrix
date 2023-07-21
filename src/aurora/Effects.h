@@ -292,64 +292,6 @@ public:
     }
   }
 
-  void setPalette(String paletteName)
-  {
-    if (paletteName == "Rainbow")
-      loadPalette(0);
-    else if (paletteName == "Ocean")
-      loadPalette(1);
-    else if (paletteName == "Cloud")
-      loadPalette(2);
-    else if (paletteName == "Forest")
-      loadPalette(3);
-    else if (paletteName == "Party")
-      loadPalette(4);
-    else if (paletteName == "Grayscale")
-      loadPalette(5);
-    else if (paletteName == "Heat")
-      loadPalette(6);
-    else if (paletteName == "Lava")
-      loadPalette(7);
-    else if (paletteName == "Ice")
-      loadPalette(8);
-    else if (paletteName == "Random")
-      RandomPalette();
-  }
-
-  void listPalettes()
-  {
-    Serial.println(F("{"));
-    Serial.print(F("  \"count\": "));
-    Serial.print(paletteCount);
-    Serial.println(",");
-    Serial.println(F("  \"results\": ["));
-
-    String paletteNames[] = {
-        "Rainbow",
-        "Ocean",
-        "Cloud",
-        "Forest",
-        "Party",
-        "Grayscale",
-        "Heat",
-        "Lava",
-        "Ice",
-        "Random"};
-
-    for (int i = 0; i < paletteCount; i++)
-    {
-      Serial.print(F("    \""));
-      Serial.print(paletteNames[i]);
-      if (i == paletteCount - 1)
-        Serial.println(F("\""));
-      else
-        Serial.println(F("\","));
-    }
-
-    Serial.println("  ]");
-    Serial.println("}");
-  }
-
   void setupGrayscalePalette()
   {
     targetPalette = CRGBPalette16(CRGB::Black, CRGB::White);

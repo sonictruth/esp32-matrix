@@ -12,7 +12,7 @@ extern MatrixPanel_I2S_DMA *dma_display;
 Effects *effects;
 GFXcanvas16 *canvas;
 
-void scrollText(String text, uint16_t color)
+void scrollText(const String& text, uint16_t color)
 {
     canvas = new GFXcanvas16(PANEL_RES_X, PANEL_RES_Y);
     effects = new Effects();

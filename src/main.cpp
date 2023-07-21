@@ -26,7 +26,7 @@ AutoConnectConfig PortalConfig;
 WiFiClient client;
 HTTPClient http;
 
-void showStatus(String status)
+void showStatus(const String& status)
 {
   dma_display->clearScreen();
   dma_display->setTextWrap(true);
@@ -156,6 +156,10 @@ void setup()
 void loop()
 {
   showGIF((char*)"/ww.gif", 1);
-  scrollText("another text containg red", myRED);
+  char englishTime[100];
+  getTimeEnglish(englishTime, esp32rtc.getHour(), esp32rtc.getMinute());
+  String time("The time is ");
+  time += englishTime;
+  scrollText(time, myRED);
   // ShowGIF((char*)"/kill.gif", 3);
 }
