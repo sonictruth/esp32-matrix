@@ -1,4 +1,6 @@
 #include "config.h"
+#include "utils.h"
+
 #include <SPIFFS.h>
 #include <ESP32-HUB75-MatrixPanel-I2S-DMA.h>
 #include <AutoConnect.h>
@@ -7,7 +9,8 @@
 #include <scroll_text.h>
 #include <show_text.h>
 #include <gif.h>
-#include "utils.h"
+#include <ElegantOTA.h>
+#include <WebServer.h>
 
 /* Time */
 ESP32Time esp32rtc;
@@ -29,7 +32,7 @@ AutoConnectConfig PortalConfig;
 WiFiClient client;
 HTTPClient http;
 
-void showStatus(const String& status)
+void showStatus(const String &status)
 {
   dma_display->clearScreen();
   dma_display->setTextWrap(true);
@@ -39,14 +42,14 @@ void showStatus(const String& status)
   dma_display->print(status);
   dma_display->setFont();
   dma_display->setTextWrap(false);
-  delay(1500);
+  delay(1000);
 }
 
 void stop()
 {
   showStatus("Restaring");
   delay(5000);
-  exit(1);
+ exit(1); 
 }
 
 bool atDetect(IPAddress &softapIP)
@@ -58,14 +61,20 @@ bool atDetect(IPAddress &softapIP)
 
 void setupDisplay()
 {
+  HUB75_I2S_CFG::i2s_pins _pins_x1 = {
+      WF1_R1_PIN, WF1_G1_PIN, WF1_B1_PIN, WF1_R2_PIN, WF1_G2_PIN,
+      WF1_B2_PIN, WF1_A_PIN, WF1_B_PIN, WF1_C_PIN, WF1_D_PIN,
+      WF1_E_PIN, WF1_LAT_PIN, WF1_OE_PIN, WF1_CLK_PIN};
+
   HUB75_I2S_CFG mxconfig(
       PANEL_RES_X,
       PANEL_RES_Y,
-      PANEL_CHAIN);
+      PANEL_CHAIN,
+      _pins_x1);
 
   /* Fix Flickering */
   mxconfig.latch_blanking = 3;
-  mxconfig.i2sspeed = HUB75_I2S_CFG::HZ_15M;
+  mxconfig.i2sspeed = HUB75_I2S_CFG::HZ_20M;
   mxconfig.clkphase = false;
 #ifdef ENABLE_DOUBLE_BUFFER
   mxconfig.double_buff = true;
@@ -73,7 +82,7 @@ void setupDisplay()
   dma_display = new MatrixPanel_I2S_DMA(mxconfig);
   canvas = new GFXcanvas16(PANEL_RES_X, PANEL_RES_Y);
   dma_display->begin();
-  dma_display->setBrightness8(90);
+  dma_display->setBrightness8(128);
   dma_display->fillScreen(myRED);
   delay(200);
   dma_display->fillScreen(myGREEN);
@@ -130,8 +139,24 @@ void setupNetworking()
     delay(500);
     showStatus("Connecting...");
   }
-  showStatus(WiFi.localIP().toString());
-  delay(1000);
+  showStatus("Connected");
+  /* Update mode */
+  int buttonPin = 11;
+  pinMode(buttonPin, INPUT);
+  if (digitalRead(buttonPin) == LOW)
+  {
+    webServer.on("/", []()
+                 { webServer.send(200, "text/plain", "Matrix online."); });
+    ElegantOTA.begin(&webServer);
+    webServer.begin();
+
+    showStatus(F("Update mode"));
+    showStatus(WiFi.localIP().toString());
+    while (true)
+    {
+      webServer.handleClient();
+    }
+  }
 }
 
 void setupStorage()
@@ -149,8 +174,8 @@ void setup()
   Serial.println(F("Serial Started"));
 
   setupDisplay();
-  setupStorage();
   setupNetworking();
+  setupStorage();
   setupTime();
   setupGIF();
 
@@ -159,7 +184,7 @@ void setup()
 
 void loop()
 {
-  showGIF((char*)"/ww.gif", 1);
+  showGIF((char *)"/ww.gif", 1);
   char englishTime[100];
   getTimeEnglish(englishTime, esp32rtc.getHour(), esp32rtc.getMinute());
   String time("The time is ");
@@ -167,5 +192,4 @@ void loop()
   scrollText(time, myRED);
   showText("Welcome to Matrix! This is a test");
   showText(time);
-
 }
