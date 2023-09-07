@@ -12,12 +12,6 @@
 #include <ElegantOTA.h>
 #include <WebServer.h>
 
-/* Time */
-ESP32Time esp32rtc;
-
-/* Display */
-MatrixPanel_I2S_DMA *dma_display = nullptr;
-GFXcanvas16 *canvas = nullptr;
 
 uint16_t myBLACK = dma_display->color565(0, 0, 0);
 uint16_t myWHITE = dma_display->color565(255, 255, 255);
@@ -28,7 +22,10 @@ uint16_t myBLUE = dma_display->color565(0, 0, 255);
 String apName = "MatrixPanel";
 String apPassword = "12345678";
 
-/* Wifi Manager */
+MatrixPanel_I2S_DMA *dma_display = nullptr;
+GFXcanvas16 *canvas = nullptr;
+ESP32Time esp32rtc;
+
 WebServer webServer;
 AutoConnect Portal(webServer);
 AutoConnectConfig PortalConfig;
@@ -80,9 +77,9 @@ void setupDisplay()
   mxconfig.latch_blanking = 3;
   mxconfig.i2sspeed = HUB75_I2S_CFG::HZ_20M;
   mxconfig.clkphase = false;
-#ifdef ENABLE_DOUBLE_BUFFER
-  mxconfig.double_buff = true;
-#endif
+  #ifdef ENABLE_DOUBLE_BUFFER
+    mxconfig.double_buff = true;
+  #endif
   dma_display = new MatrixPanel_I2S_DMA(mxconfig);
   canvas = new GFXcanvas16(PANEL_RES_X, PANEL_RES_Y);
   dma_display->begin();
