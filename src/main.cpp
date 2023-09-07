@@ -25,6 +25,9 @@ uint16_t myRED = dma_display->color565(255, 0, 0);
 uint16_t myGREEN = dma_display->color565(0, 255, 0);
 uint16_t myBLUE = dma_display->color565(0, 0, 255);
 
+String apName = "MatrixPanel";
+String apPassword = "12345678";
+
 /* Wifi Manager */
 WebServer webServer;
 AutoConnect Portal(webServer);
@@ -47,15 +50,16 @@ void showStatus(const String &status)
 
 void stop()
 {
-  showStatus("Restaring");
+  showStatus(F("Restaring"));
   delay(5000);
- exit(1); 
+  ESP.restart(); 
 }
 
 bool atDetect(IPAddress &softapIP)
 {
-  showStatus("Configure Wifi");
-  showStatus("AP:MatrixPanel\nPASS:\n12345678");
+  showStatus(F("Configure Wifi"));
+  showStatus(apName);
+  showStatus(apPassword);
   return true;
 }
 
@@ -94,7 +98,7 @@ void setupDisplay()
 
 void setupTime()
 {
-  showStatus("Syncing");
+  showStatus(F("Syncing"));
   const char *ntpServer = "time.cloudflare.com";
   struct tm timeinfo;
   const long gmtOffset_sec = 3600;
@@ -103,7 +107,7 @@ void setupTime()
 
   if (!getLocalTime(&timeinfo))
   {
-    showStatus("Failed to get time");
+    showStatus(F("Failed to get time"));
     stop();
   }
   else
@@ -114,11 +118,11 @@ void setupTime()
 
 void setupNetworking()
 {
-  showStatus("Connecting");
+  showStatus(F("Connecting"));
 
-  PortalConfig.apid = "MatixPanel";
+  PortalConfig.apid = apName;
+  PortalConfig.password = apPassword;
   PortalConfig.title = "Configure WiFi";
-  PortalConfig.password = "12345678";
   PortalConfig.menuItems = AC_MENUITEM_CONFIGNEW;
 
   Portal.config(PortalConfig);
@@ -126,20 +130,21 @@ void setupNetworking()
 
   if (Portal.begin())
   {
-    showStatus("Connected");
+    showStatus(F("Connected"));
   }
   else
   {
-    showStatus("Portal Error");
+    showStatus(F("Portal Error"));
     stop();
   }
 
   while (WiFi.status() != WL_CONNECTED)
   {
     delay(500);
-    showStatus("Connecting...");
+    showStatus(F("Connecting"));
   }
   showStatus("Connected");
+
   /* Update mode */
   int buttonPin = 11;
   pinMode(buttonPin, INPUT);
@@ -185,11 +190,13 @@ void setup()
 void loop()
 {
   showGIF((char *)"/ww.gif", 1);
+
   char englishTime[100];
   getTimeEnglish(englishTime, esp32rtc.getHour(), esp32rtc.getMinute());
   String time("The time is ");
   time += englishTime;
   scrollText(time, myRED);
+
   showText("Welcome to Matrix! This is a test");
   showText(time);
 }
