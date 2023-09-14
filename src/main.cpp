@@ -6,12 +6,13 @@
 #include <AutoConnect.h>
 #include <WiFi.h>
 #include <ESP32Time.h>
-#include <scroll_text.h>
-#include <show_text.h>
-#include <gif.h>
 #include <ElegantOTA.h>
 #include <WebServer.h>
+#include <HTTPClient.h>
 
+#include <scroll_text.h>
+#include <show_text.h>
+#include <show_gif.h>
 
 uint16_t myBLACK = dma_display->color565(0, 0, 0);
 uint16_t myWHITE = dma_display->color565(255, 255, 255);
@@ -19,7 +20,7 @@ uint16_t myRED = dma_display->color565(255, 0, 0);
 uint16_t myGREEN = dma_display->color565(0, 255, 0);
 uint16_t myBLUE = dma_display->color565(0, 0, 255);
 
-String apName = "MatrixPanel";
+String apName = "Matrix";
 String apPassword = "12345678";
 
 MatrixPanel_I2S_DMA *dma_display = nullptr;
@@ -49,7 +50,7 @@ void stop()
 {
   showStatus(F("Restaring"));
   delay(5000);
-  ESP.restart(); 
+  ESP.restart();
 }
 
 bool atDetect(IPAddress &softapIP)
@@ -75,11 +76,11 @@ void setupDisplay()
 
   /* Fix Flickering */
   mxconfig.latch_blanking = 3;
-  mxconfig.i2sspeed = HUB75_I2S_CFG::HZ_20M;
+  mxconfig.i2sspeed = HUB75_I2S_CFG::HZ_15M; // HZ_20M
   mxconfig.clkphase = false;
-  #ifdef ENABLE_DOUBLE_BUFFER
-    mxconfig.double_buff = true;
-  #endif
+#ifdef ENABLE_DOUBLE_BUFFER
+  mxconfig.double_buff = true;
+#endif
   dma_display = new MatrixPanel_I2S_DMA(mxconfig);
   canvas = new GFXcanvas16(PANEL_RES_X, PANEL_RES_Y);
   dma_display->begin();
@@ -184,16 +185,52 @@ void setup()
   showStatus(F("Matrix OK"));
 }
 
+void show_remote_text()
+{
+  HTTPClient http;
+  // char url[] = "https://www.sonicpix.ro/matrix/read.php";
+  char url[] = "https://ssh.sonicpix.ro/matrix/read.php";
+  http.begin(url);
+
+  http.addHeader("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36");
+
+  http.setTimeout(5000);
+
+  int httpResponseCode = http.GET();
+
+  if (httpResponseCode == 200)
+  {
+    Serial.print("HTTP Response code: ");
+    Serial.println(httpResponseCode);
+    String payload = http.getString();
+    Serial.println(payload);
+    show_text(payload);
+  }
+  else
+  {
+    show_text(http.errorToString(httpResponseCode));
+  }
+  http.end();
+}
+
 void loop()
 {
-  showGIF((char *)"/ww.gif", 1);
+  show_gif((char *)"/ww.gif", 1);
 
+  /*
   char englishTime[100];
   getTimeEnglish(englishTime, esp32rtc.getHour(), esp32rtc.getMinute());
   String time("The time is ");
   time += englishTime;
-  scrollText(time, myRED);
+  */
+  //scroll_text("Welcome to matrix", myRED);
 
-  showText("Welcome to Matrix! This is a test");
-  showText(time);
+  // show_text(time);
+  show_remote_text();
+  if (WiFi.status() != WL_CONNECTED)
+  {
+    show_text("NOT CONNECTED");
+    WiFi.disconnect();
+    WiFi.reconnect();
+  }
 }

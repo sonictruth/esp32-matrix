@@ -139,7 +139,7 @@ int32_t GIFSeekFile(GIFFILE *pFile, int32_t iPosition)
   return pFile->iPos;
 }
 
-void showGIF(char *name, int times)
+void show_gif(char *name, int times)
 {
 
   int count = 0;
