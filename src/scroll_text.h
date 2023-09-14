@@ -28,13 +28,12 @@ void scroll_text(const String &text, uint16_t color)
 
     int16_t xOne, yOne;
     uint16_t w, h;
-
     canvas->setTextColor(color);
     canvas->setTextSize(1);
     canvas->setTextWrap(false);
     canvas->setFont(&Creepster_Caps_Regular_25);
     canvas->getTextBounds(text, textXPosition, textYPosition, &xOne, &yOne, &w, &h);
-    
+
     while (1)
     {
         unsigned long now = millis();

@@ -23,6 +23,8 @@ uint16_t myBLUE = dma_display->color565(0, 0, 255);
 String apName = "Matrix";
 String apPassword = "12345678";
 
+int buttonPin = 11;
+
 MatrixPanel_I2S_DMA *dma_display = nullptr;
 GFXcanvas16 *canvas = nullptr;
 ESP32Time esp32rtc;
@@ -114,6 +116,21 @@ void setupTime()
   }
 }
 
+void checkUpdateMode() {
+  if (digitalRead(buttonPin) == LOW)
+  {
+    webServer.on("/", []()
+                 { webServer.send(200, "text/plain", "Matrix online."); });
+    ElegantOTA.begin(&webServer);
+    webServer.begin();
+    showStatus(WiFi.localIP().toString());
+    while (true)
+    {
+      webServer.handleClient();
+    }
+  }
+}
+
 void setupNetworking()
 {
   showStatus(F("Connecting"));
@@ -122,6 +139,8 @@ void setupNetworking()
   PortalConfig.password = apPassword;
   PortalConfig.title = "Configure WiFi";
   PortalConfig.menuItems = AC_MENUITEM_CONFIGNEW;
+  PortalConfig.autoSave = AC_SAVECREDENTIAL_ALWAYS;
+  PortalConfig.autoReconnect = true;
 
   Portal.config(PortalConfig);
   Portal.onDetect(atDetect);
@@ -139,27 +158,9 @@ void setupNetworking()
   while (WiFi.status() != WL_CONNECTED)
   {
     delay(500);
-    showStatus(F("Connecting"));
+    showStatus(F("..."));
   }
-  showStatus("Connected");
-
-  /* Update mode */
-  int buttonPin = 11;
-  pinMode(buttonPin, INPUT);
-  if (digitalRead(buttonPin) == LOW)
-  {
-    webServer.on("/", []()
-                 { webServer.send(200, "text/plain", "Matrix online."); });
-    ElegantOTA.begin(&webServer);
-    webServer.begin();
-
-    showStatus(F("Update mode"));
-    showStatus(WiFi.localIP().toString());
-    while (true)
-    {
-      webServer.handleClient();
-    }
-  }
+  showStatus("Done");
 }
 
 void setupStorage()
@@ -175,9 +176,13 @@ void setup()
 {
   Serial.begin(115200);
   Serial.println(F("Serial Started"));
+  pinMode(buttonPin, INPUT);
 
   setupDisplay();
   setupNetworking();
+
+  checkUpdateMode();
+
   setupStorage();
   setupTime();
   setupGIF();
@@ -191,19 +196,13 @@ void show_remote_text()
   // char url[] = "https://www.sonicpix.ro/matrix/read.php";
   char url[] = "https://ssh.sonicpix.ro/matrix/read.php";
   http.begin(url);
-
-  http.addHeader("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36");
-
   http.setTimeout(5000);
 
   int httpResponseCode = http.GET();
 
   if (httpResponseCode == 200)
   {
-    Serial.print("HTTP Response code: ");
-    Serial.println(httpResponseCode);
     String payload = http.getString();
-    Serial.println(payload);
     show_text(payload);
   }
   else
@@ -213,10 +212,19 @@ void show_remote_text()
   http.end();
 }
 
+void checkNetworking() {
+  if (WiFi.status() != WL_CONNECTED)
+  {
+    show_text("NOT CONNECTED");
+    WiFi.disconnect();
+    WiFi.reconnect();
+  }
+  checkUpdateMode();
+}
+
 void loop()
 {
-  show_gif((char *)"/ww.gif", 1);
-
+  // show_gif((char *)"/ww.gif", 1);
   /*
   char englishTime[100];
   getTimeEnglish(englishTime, esp32rtc.getHour(), esp32rtc.getMinute());
@@ -226,11 +234,7 @@ void loop()
   //scroll_text("Welcome to matrix", myRED);
 
   // show_text(time);
-  show_remote_text();
-  if (WiFi.status() != WL_CONNECTED)
-  {
-    show_text("NOT CONNECTED");
-    WiFi.disconnect();
-    WiFi.reconnect();
-  }
+  // show_remote_text();
+  show_text("Rememberedtest ok ok ");
+  checkNetworking();
 }

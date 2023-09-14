@@ -18,6 +18,7 @@ void show_text(const String &text)
     char textArray[textLen];
     text.toCharArray(textArray, textLen);
 
+    canvas->setTextWrap(true);
     canvas->setTextColor(dma_display->color565(255, 255, 255));
     canvas->setFont();
  
@@ -52,9 +53,11 @@ void show_text(const String &text)
             startTime = millis();
             timeOut = 500 + (strlen(token) * 200);
         }
+        
         canvas->fillScreen(0);
         canvas->setTextSize(1);
         canvas->setCursor(textX, textY);
+
         if (strcmp(token, "...") != 0) // Do not print ... 
         {
             canvas->print(token);
