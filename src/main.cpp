@@ -256,7 +256,22 @@ void checkNetworking() {
 }
 
 void show_random_gif() {
-  show_gif((char *)"/ww.gif", 1);
+  File root = SPIFFS.open("/");
+  File file = root.openNextFile();
+  int maxGifFilesCount = 30;
+  char gifFiles[maxGifFilesCount][10] = {};
+  int gifFilesCount = 0;
+  while (file && gifFilesCount < maxGifFilesCount)
+  {
+    if (strstr(file.name(), ".gif") != NULL)
+    {
+      strcpy(gifFiles[gifFilesCount], file.name());
+      gifFilesCount++;
+    }
+    file = root.openNextFile();
+  }
+
+  show_gif(gifFiles[random(0, gifFilesCount)], 2);
 }
 
 void loop()
