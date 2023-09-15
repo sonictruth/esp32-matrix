@@ -198,7 +198,6 @@ void setup()
 void show_remote_text()
 {
   HTTPClient http;
-  // char url[] = "https://www.sonicpix.ro/matrix/read.php";
   char url[] = "http://ssh.sonicpix.ro/matrix/read.php";
   http.begin(url);
   http.setTimeout(5000);
@@ -217,6 +216,35 @@ void show_remote_text()
   http.end();
 }
 
+void show_remote_text_scroll()
+{
+  HTTPClient http;
+  char url[] = "http://ssh.sonicpix.ro/matrix/read.php?m=1";
+  http.begin(url);
+  http.setTimeout(5000);
+
+  int httpResponseCode = http.GET();
+
+  if (httpResponseCode == 200)
+  {
+    String payload = http.getString();
+    scroll_text(payload, myRED);
+  }
+  else
+  {
+    show_text(http.errorToString(httpResponseCode));
+  }
+  http.end();
+}
+
+void show_time() {
+  char englishTime[100];
+  getTimeEnglish(englishTime, esp32rtc.getHour(), esp32rtc.getMinute());
+  String time("The time is ");
+  time += englishTime;
+  show_text(time);
+}
+
 void checkNetworking() {
   if (WiFi.status() != WL_CONNECTED)
   {
@@ -227,19 +255,17 @@ void checkNetworking() {
   checkUpdateMode();
 }
 
+void show_random_gif() {
+  show_gif((char *)"/ww.gif", 1);
+}
+
 void loop()
 {
-  // show_gif((char *)"/ww.gif", 1);
-  /*
-  char englishTime[100];
-  getTimeEnglish(englishTime, esp32rtc.getHour(), esp32rtc.getMinute());
-  String time("The time is ");
-  time += englishTime;
-  */
-  // scroll_text("Hello", myRED);
-
-  // show_text(time);
+  show_random_gif();
+  show_time(); 
+  show_remote_text_scroll();
+  show_random_gif();
   show_remote_text();
-  // show_text("Supercalifragilisticexpialidocious Home oc rigHT");
+  show_random_gif();
   checkNetworking();
 }
