@@ -37,6 +37,9 @@ AutoConnectConfig PortalConfig;
 WiFiClient client;
 HTTPClient http;
 
+char gifFiles[30][14] = {};
+int gifFilesCount = 0;
+
 void showStatus(const String &status)
 {
   dma_display->clearScreen();
@@ -118,7 +121,8 @@ void setupTime()
   }
 }
 
-void checkUpdateMode() {
+void checkUpdateMode()
+{
   if (digitalRead(buttonPin) == LOW)
   {
     webServer.on("/", []()
@@ -171,6 +175,18 @@ void setupStorage()
   {
     showStatus(F("SPIFFS Mount Failed"));
     stop();
+  }
+  File root = SPIFFS.open("/");
+  File file = root.openNextFile();
+
+  while (file && gifFilesCount < 30)
+  {
+    if (strstr(file.name(), ".gif") != NULL)
+    {
+      strcpy(gifFiles[gifFilesCount], file.path() );
+      gifFilesCount++;
+    }
+    file = root.openNextFile();
   }
 }
 
@@ -237,7 +253,8 @@ void show_remote_text_scroll()
   http.end();
 }
 
-void show_time() {
+void show_time()
+{
   char englishTime[100];
   getTimeEnglish(englishTime, esp32rtc.getHour(), esp32rtc.getMinute());
   String time("The time is ");
@@ -245,7 +262,8 @@ void show_time() {
   show_text(time);
 }
 
-void checkNetworking() {
+void checkNetworking()
+{
   if (WiFi.status() != WL_CONNECTED)
   {
     show_text("NOT CONNECTED");
@@ -255,32 +273,18 @@ void checkNetworking() {
   checkUpdateMode();
 }
 
-void show_random_gif() {
-  File root = SPIFFS.open("/");
-  File file = root.openNextFile();
-  int maxGifFilesCount = 30;
-  char gifFiles[maxGifFilesCount][10] = {};
-  int gifFilesCount = 0;
-  while (file && gifFilesCount < maxGifFilesCount)
-  {
-    if (strstr(file.name(), ".gif") != NULL)
-    {
-      strcpy(gifFiles[gifFilesCount], file.name());
-      gifFilesCount++;
-    }
-    file = root.openNextFile();
-  }
-
-  show_gif(gifFiles[random(0, gifFilesCount)], 2);
+void show_random_gif()
+{
+  show_gif(gifFiles[random(0, gifFilesCount)], 4);
 }
 
 void loop()
 {
   show_random_gif();
-  show_time(); 
-  show_remote_text_scroll();
-  show_random_gif();
-  show_remote_text();
-  show_random_gif();
+  // show_time();
+  // show_remote_text_scroll();
+  // show_random_gif();
+  // show_remote_text();
+  // show_random_gif();
   checkNetworking();
 }
