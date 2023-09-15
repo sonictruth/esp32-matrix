@@ -20,22 +20,26 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+#pragma once
 #ifndef PatternInfinity_H
+#define PatternInfinity_H
 
 #include "Drawable.h"
 
-class PatternInfinity : public Drawable {
+class PatternInfinity : public Drawable
+{
 public:
-    PatternInfinity() {
+    PatternInfinity()
+    {
         name = (char *)"Infinity";
     }
 
-    unsigned int drawFrame() {
-        // dim all pixels on the display slightly 
+    unsigned int drawFrame()
+    {
+        // dim all pixels on the display slightly
         // to 250/255 (98%) of their current brightness
-      blur2d(effects->leds, MATRIX_WIDTH > 255 ? 255 : MATRIX_WIDTH, MATRIX_HEIGHT > 255 ? 255 : MATRIX_HEIGHT, 250);
+        blur2d(effects->leds, MATRIX_WIDTH > 255 ? 255 : MATRIX_WIDTH, MATRIX_HEIGHT > 255 ? 255 : MATRIX_HEIGHT, 250);
         //        effects.DimAll(250); effects.ShowFrame();
-
 
         // the Effects class has some sample oscillators
         // that move from 0 to 255 at different speeds

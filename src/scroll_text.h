@@ -14,9 +14,6 @@ extern GFXcanvas16 *canvas;
 
 void scroll_text(const String &text, uint16_t color)
 {
-    Effects *effects;
-    effects = new Effects();
-    effects->Setup();
     PatternInfinity ps;
 
     unsigned long isAnimationDue = 0;
@@ -52,5 +49,4 @@ void scroll_text(const String &text, uint16_t color)
         canvas->print(text);
         dma_display->drawRGBBitmap(0, 0, canvas->getBuffer(), PANEL_RES_X, PANEL_RES_Y);
     }
-    delete effects;
 }

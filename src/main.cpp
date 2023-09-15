@@ -27,6 +27,8 @@ int buttonPin = 11;
 
 MatrixPanel_I2S_DMA *dma_display = nullptr;
 GFXcanvas16 *canvas = nullptr;
+Effects *effects = nullptr;
+
 ESP32Time esp32rtc;
 
 WebServer webServer;
@@ -78,7 +80,7 @@ void setupDisplay()
 
   /* Fix Flickering */
   mxconfig.latch_blanking = 3;
-  mxconfig.i2sspeed = HUB75_I2S_CFG::HZ_15M; // HZ_20M
+  mxconfig.i2sspeed = HUB75_I2S_CFG::HZ_20M; // HZ_20M
   mxconfig.clkphase = false;
 #ifdef ENABLE_DOUBLE_BUFFER
   mxconfig.double_buff = true;
@@ -120,7 +122,7 @@ void checkUpdateMode() {
   if (digitalRead(buttonPin) == LOW)
   {
     webServer.on("/", []()
-                 { webServer.send(200, "text/plain", "Matrix online."); });
+                 { webServer.send(200, "text/plain", apName); });
     ElegantOTA.begin(&webServer);
     webServer.begin();
     showStatus(WiFi.localIP().toString());
@@ -187,6 +189,9 @@ void setup()
   setupTime();
   setupGIF();
 
+  effects = new Effects();
+  effects->Setup();
+
   showStatus(F("Matrix OK"));
 }
 
@@ -194,7 +199,7 @@ void show_remote_text()
 {
   HTTPClient http;
   // char url[] = "https://www.sonicpix.ro/matrix/read.php";
-  char url[] = "https://ssh.sonicpix.ro/matrix/read.php";
+  char url[] = "http://ssh.sonicpix.ro/matrix/read.php";
   http.begin(url);
   http.setTimeout(5000);
 
@@ -231,10 +236,10 @@ void loop()
   String time("The time is ");
   time += englishTime;
   */
-  //scroll_text("Welcome to matrix", myRED);
+  // scroll_text("Hello", myRED);
 
   // show_text(time);
-  // show_remote_text();
-  show_text("Rememberedtest ok ok ");
+  show_remote_text();
+  // show_text("Supercalifragilisticexpialidocious Home oc rigHT");
   checkNetworking();
 }
