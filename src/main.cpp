@@ -83,8 +83,10 @@ void setupDisplay()
 
   /* Fix Flickering */
   mxconfig.latch_blanking = 3;
-  mxconfig.i2sspeed = HUB75_I2S_CFG::HZ_20M; // HZ_20M
+  mxconfig.i2sspeed = HUB75_I2S_CFG::HZ_15M; // HZ_20M 15/120
   mxconfig.clkphase = false;
+  mxconfig.min_refresh_rate = 120;
+
 #ifdef ENABLE_DOUBLE_BUFFER
   mxconfig.double_buff = true;
 #endif
@@ -244,7 +246,7 @@ void show_remote_text_scroll()
   if (httpResponseCode == 200)
   {
     String payload = http.getString();
-    scroll_text(payload, myRED);
+    scroll_text(payload, getRandomColor());
   }
   else
   {
@@ -280,11 +282,12 @@ void show_random_gif()
 
 void loop()
 {
-  show_random_gif();
+  //show_random_gif();
   // show_time();
-  // show_remote_text_scroll();
-  // show_random_gif();
+  //show_random_gif();
+   show_remote_text_scroll();
+ // show_random_gif();
   // show_remote_text();
-  // show_random_gif();
+  //show_random_gif();
   checkNetworking();
 }

@@ -138,6 +138,7 @@ public:
     void start()
     {
         effects->ClearFrame();
+        effects->loadPalette(random(0,8));
     }
 
     unsigned int drawFrame()
@@ -159,8 +160,6 @@ public:
             snake->move();
             snake->draw(colors);
         }
-
-        effects->ShowFrame();
 
         return 30;
     }

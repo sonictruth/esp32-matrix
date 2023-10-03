@@ -1,4 +1,2 @@
-- random patern ?
-- random gif list gifs
-
-
+- random patern ? fire circles
+- mk gifs eye closing contrast 

@@ -76,7 +76,7 @@ void show_text(const String &text)
             else
             {
                 textX = (PANEL_RES_X / 2 - w / 2);
-                timeOut = 250 + (strlen(token) * 200);
+                timeOut = 250 + (strlen(token) * 150);
             }
 
             startTime = millis();
