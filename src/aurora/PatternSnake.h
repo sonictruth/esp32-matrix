@@ -32,6 +32,7 @@
 class PatternSnake : public Drawable
 {
 private:
+    uint8_t brightness = 220;
     static const byte SNAKE_LENGTH = 16;
 
     CRGB colors[SNAKE_LENGTH];
@@ -137,14 +138,12 @@ public:
 
     void start()
     {
-        effects->ClearFrame();
-        effects->loadPalette(random(0,8));
     }
 
     unsigned int drawFrame()
     {
 
-        fill_palette(colors, SNAKE_LENGTH, initialHue++, 5, effects->currentPalette, 255, LINEARBLEND);
+        fill_palette(colors, SNAKE_LENGTH, initialHue++, 5, effects->currentPalette, brightness, LINEARBLEND);
 
         for (int i = 0; i < snakeCount; i++)
         {
@@ -160,8 +159,7 @@ public:
             snake->move();
             snake->draw(colors);
         }
-
-        return 30;
+        return 60;
     }
 };
 

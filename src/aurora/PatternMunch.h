@@ -2,6 +2,8 @@
  * Aurora: https://github.com/pixelmatix/aurora
  * Copyright (c) 2014 Jason Coon
  *
+ * Munch pattern created by J.B. Langston: https://github.com/jblang/aurora/blob/master/PatternMunch.h
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
  * the Software without restriction, including without limitation the rights to
@@ -21,49 +23,62 @@
  */
 
 #pragma once
-#ifndef PatternInfinity_H
-#define PatternInfinity_H
+#ifndef PatternMunch_H
+#define PatternMunch_H
 
 #include "Drawable.h"
 
-class PatternInfinity : public Drawable
+class PatternMunch : public Drawable
 {
+private:
+  byte count = 0;
+  byte dir = 1;
+  byte flip = 0;
+  byte generation = 0;
+
 public:
-    PatternInfinity()
+  PatternMunch()
+  {
+    name = (char *)"Munch";
+  }
+
+  void start()
+  {
+  }
+
+  unsigned int drawFrame()
+  {
+
+    for (uint16_t x = 0; x < MATRIX_WIDTH; x++)
     {
-        name = (char *)"Infinity";
+      for (uint16_t y = 0; y < MATRIX_HEIGHT; y++)
+      {
+        //effects->leds[XY16(x, y)] = (x ^ y ^ flip) < count ? effects->ColorFromCurrentPalette(((x ^ y) << 2) + generation) : CRGB::Black;
+
+        // The below is more pleasant
+        effects->leds[XY(x, y)] = effects->ColorFromCurrentPalette(((x ^ y) << 2) + generation) ;
+      }
     }
 
-    void start()
+    count += dir;
+
+    if (count <= 0 || count >= MATRIX_WIDTH)
     {
+      dir = -dir;
     }
 
-    unsigned int drawFrame()
+    if (count <= 0)
     {
-        // dim all pixels on the display slightly
-        // to 250/255 (98%) of their current brightness
-        blur2d(effects->leds, MATRIX_WIDTH > 255 ? 255 : MATRIX_WIDTH, MATRIX_HEIGHT > 255 ? 255 : MATRIX_HEIGHT, 250);
-
-        // the Effects class has some sample oscillators
-        // that move from 0 to 255 at different speeds
-        effects->MoveOscillators();
-
-        // the horizontal position of the head of the infinity sign
-        // oscillates from 0 to the maximum horizontal and back
-        int x = (MATRIX_WIDTH - 1) - effects->p[1];
-
-        // the vertical position of the head oscillates
-        // from 8 to 23 and back (hard-coded for a 32x32 matrix)
-        int y = map8(sin8(effects->osci[3]), 8, 23);
-
-        // the hue oscillates from 0 to 255, overflowing back to 0
-        byte hue = sin8(effects->osci[5]);
-
-        // draw a pixel at x,y using a color from the current palette
-        effects->Pixel(x, y, hue);
-        effects->DimAll(230);
-        return 30;
+      if (flip == 0)
+        flip = MATRIX_WIDTH - 1;
+      else
+        flip = 0;
     }
+
+    generation++;
+
+    return 60;
+  }
 };
 
 #endif

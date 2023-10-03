@@ -114,6 +114,7 @@ uint8_t noisesmoothing;
 
 class Effects
 {
+ 
 public:
   CRGB *leds;
 

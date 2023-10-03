@@ -1,18 +1,14 @@
 #include "config.h"
 #include "./fonts/chicago_font.h"
 #include <ESP32-HUB75-MatrixPanel-I2S-DMA.h>
-
-#include "./aurora/effects.h"
-#include "./aurora/PatternPlasma.h"
-#include "./aurora/PatternSnake.h"
-#include "./aurora/PatternInfinity.h"
+#include "./aurora/Playlist.h"
 
 extern MatrixPanel_I2S_DMA *dma_display;
 extern GFXcanvas16 *canvas;
+extern Playlist *playlist;
 
 void show_text(const String &text)
 {
-    PatternInfinity ps;
 
     const char delim[2] = " ";
     int16_t textX, textY;
@@ -31,7 +27,7 @@ void show_text(const String &text)
 
     bool isScrollingText = false;
 
-    canvas->setTextColor(dma_display->color565(255, 255, 255));
+    canvas->setTextColor(getRandomColor());
     canvas->setFont(&Chicago);
     canvas->setTextWrap(false);
     canvas->setTextSize(1);
@@ -39,6 +35,8 @@ void show_text(const String &text)
     unsigned long isAnimationDue = 0;
     int delayBetweeenScrollPaint = 190;
 
+    playlist->loadRandomPattern();
+    
     while (1)
     {
         unsigned long now = millis();
@@ -82,8 +80,7 @@ void show_text(const String &text)
             startTime = millis();
         }
 
-        // canvas->fillScreen(0);
-        ps.drawFrame();
+        playlist->showFrame();
         if (strcmp(token, "...") != 0) // Do not print ...
         {
             if (isScrollingText && now > isAnimationDue)

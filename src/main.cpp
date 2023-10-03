@@ -10,9 +10,11 @@
 #include <WebServer.h>
 #include <HTTPClient.h>
 
-#include <scroll_text.h>
-#include <show_text.h>
-#include <show_gif.h>
+#include "scroll_text.h"
+#include "show_text.h"
+#include "show_gif.h"
+
+#include "./aurora/Playlist.h"
 
 uint16_t myBLACK = dma_display->color565(0, 0, 0);
 uint16_t myWHITE = dma_display->color565(255, 255, 255);
@@ -27,7 +29,7 @@ int buttonPin = 11;
 
 MatrixPanel_I2S_DMA *dma_display = nullptr;
 GFXcanvas16 *canvas = nullptr;
-Effects *effects = nullptr;
+Playlist *playlist = nullptr;
 
 ESP32Time esp32rtc;
 
@@ -185,7 +187,7 @@ void setupStorage()
   {
     if (strstr(file.name(), ".gif") != NULL)
     {
-      strcpy(gifFiles[gifFilesCount], file.path() );
+      strcpy(gifFiles[gifFilesCount], file.path());
       gifFilesCount++;
     }
     file = root.openNextFile();
@@ -207,8 +209,8 @@ void setup()
   setupTime();
   setupGIF();
 
-  effects = new Effects();
-  effects->Setup();
+  playlist = new Playlist();
+  playlist->setup();
 
   showStatus(F("Matrix OK"));
 }
@@ -277,17 +279,14 @@ void checkNetworking()
 
 void show_random_gif()
 {
-  show_gif(gifFiles[random(0, gifFilesCount)], 4);
+  show_gif(gifFiles[random(0, gifFilesCount)], 3);
 }
 
 void loop()
 {
-  //show_random_gif();
-  // show_time();
-  //show_random_gif();
-   show_remote_text_scroll();
- // show_random_gif();
-  // show_remote_text();
-  //show_random_gif();
+  show_random_gif();
+  show_remote_text_scroll();
+  show_time();
+  show_remote_text();
   checkNetworking();
 }

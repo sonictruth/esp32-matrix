@@ -1,4 +1,5 @@
 /*
+ *
  * Aurora: https://github.com/pixelmatix/aurora
  * Copyright (c) 2014 Jason Coon
  *
@@ -20,49 +21,34 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#pragma once
-#ifndef PatternInfinity_H
-#define PatternInfinity_H
-
+#ifndef PatternIncrementalDrift_H
+#define PatternIncrementalDrift_H
 #include "Drawable.h"
 
-class PatternInfinity : public Drawable
+class PatternIncrementalDrift : public Drawable
 {
 public:
-    PatternInfinity()
+    PatternIncrementalDrift()
     {
-        name = (char *)"Infinity";
-    }
-
-    void start()
-    {
+        name = (char *)"Incremental Drift";
     }
 
     unsigned int drawFrame()
     {
-        // dim all pixels on the display slightly
-        // to 250/255 (98%) of their current brightness
-        blur2d(effects->leds, MATRIX_WIDTH > 255 ? 255 : MATRIX_WIDTH, MATRIX_HEIGHT > 255 ? 255 : MATRIX_HEIGHT, 250);
+        uint8_t dim = beatsin8(2, 150, 190);
+        effects->DimAll(dim);
 
-        // the Effects class has some sample oscillators
-        // that move from 0 to 255 at different speeds
-        effects->MoveOscillators();
+        for (int i = 2; i <= MATRIX_WIDTH / 2; i++)
+        {
+            CRGB color = effects->ColorFromCurrentPalette((i - 2) * (240 / (MATRIX_WIDTH / 2)), 190);
 
-        // the horizontal position of the head of the infinity sign
-        // oscillates from 0 to the maximum horizontal and back
-        int x = (MATRIX_WIDTH - 1) - effects->p[1];
+            uint8_t x = beatcos8((17 - i) * 2, MATRIX_CENTER_X - i, MATRIX_CENTER_X + i);
+            uint8_t y = beatsin8((17 - i) * 2, MATRIX_CENTER_Y - i, MATRIX_CENTER_Y + i);
 
-        // the vertical position of the head oscillates
-        // from 8 to 23 and back (hard-coded for a 32x32 matrix)
-        int y = map8(sin8(effects->osci[3]), 8, 23);
-
-        // the hue oscillates from 0 to 255, overflowing back to 0
-        byte hue = sin8(effects->osci[5]);
-
-        // draw a pixel at x,y using a color from the current palette
-        effects->Pixel(x, y, hue);
-        effects->DimAll(230);
-        return 30;
+            effects->drawBackgroundFastLEDPixelCRGB(x, y, color);
+        }
+        effects->DimAll(200);
+        return 60;
     }
 };
 

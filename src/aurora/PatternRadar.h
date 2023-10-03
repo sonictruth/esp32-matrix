@@ -2,9 +2,6 @@
  * Aurora: https://github.com/pixelmatix/aurora
  * Copyright (c) 2014 Jason Coon
  *
- * Portions of this code are adapted from LedEffects Plasma by Robert Atkins: https://bitbucket.org/ratkins/ledeffects/src/26ed3c51912af6fac5f1304629c7b4ab7ac8ca4b/Plasma.cpp?at=default
- * Copyright (c) 2013 Robert Atkins
- *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
  * the Software without restriction, including without limitation the rights to
@@ -24,51 +21,47 @@
  */
 
 #pragma once
-#ifndef PatternPlasma_H
-#define PatternPlasma_H
+#ifndef PatternRadar_H
+#define PatternRadar_H
 
 #include "Drawable.h"
 
-class PatternPlasma : public Drawable
+class PatternRadar : public Drawable
 {
 private:
-    int time = 0;
-    int cycles = 0;
+    byte theta = 0;
+    byte hueoffset = 0;
 
 public:
-    PatternPlasma()
+    PatternRadar()
     {
-        name = (char *)"Plasma";
+        name = (char *)"Radar";
+    }
+
+    void start()
+    {
+       
     }
 
     unsigned int drawFrame()
     {
-        for (int x = 0; x < MATRIX_WIDTH; x++)
-        {
-            for (int y = 0; y < MATRIX_HEIGHT; y++)
-            {
-                int16_t v = 0;
-                uint8_t wibble = sin8(time);
-                v += sin16(x * wibble * 2 + time);
-                v += cos16(y * (128 - wibble) * 2 + time);
-                v += sin16(y * x * cos8(-time) / 2);
 
-                effects->Pixel(x, y, (v >> 8) + 127);
+        for (int offset = 0; offset < MATRIX_CENTER_X; offset++)
+        {
+            byte hue = 255 - (offset * 16 + hueoffset);
+            CRGB color = effects->ColorFromCurrentPalette(hue);
+            uint8_t x = mapcos8(theta, offset, (MATRIX_WIDTH - 1) - offset);
+            uint8_t y = mapsin8(theta, offset, (MATRIX_HEIGHT - 1) - offset);
+            uint16_t xy = XY(x, y);
+            effects->leds[xy] = color;
+
+            EVERY_N_MILLIS(25)
+            {
+                theta += 2;
+                hueoffset += 1;
             }
         }
-
-        time += 1;
-        cycles++;
-
-        if (cycles >= 2048)
-        {
-            time = 0;
-            cycles = 0;
-        }
-
-        effects->ShowFrame();
-
-        return 30;
+      return 0;
     }
 };
 
