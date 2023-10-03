@@ -260,10 +260,13 @@ void show_remote_text_scroll()
 void show_time()
 {
   char englishTime[100];
+  char final[150];
+  char prefix[] = " The time is ";
+  char pause[] = " ... ";;
   getTimeEnglish(englishTime, esp32rtc.getHour(), esp32rtc.getMinute());
-  String time("The time is ");
-  time += englishTime;
-  show_text(time);
+
+  sprintf(final, " ... The time is %s ... ", englishTime);
+  show_text(final);
 }
 
 void checkNetworking()
