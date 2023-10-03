@@ -6,7 +6,10 @@
 extern MatrixPanel_I2S_DMA *dma_display;
 extern GFXcanvas16 *canvas;
 extern Playlist *playlist;
-
+/*
+Example
+ ... (179,186,42) Joke: ... (204,133,9) What did the number zero say to the number eight? Nice Belt ... 
+*/
 void show_text(const String &text)
 {
 

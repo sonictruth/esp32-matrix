@@ -215,10 +215,10 @@ void setup()
   showStatus(F("Matrix OK"));
 }
 
-void show_remote_text()
+void show_joke()
 {
   HTTPClient http;
-  char url[] = "http://ssh.sonicpix.ro/matrix/read.php";
+  char url[] = "http://ssh.sonicpix.ro/matrix/read.php?screen=joke";
   http.begin(url);
   http.setTimeout(5000);
 
@@ -236,10 +236,31 @@ void show_remote_text()
   http.end();
 }
 
-void show_remote_text_scroll()
+void show_music()
 {
   HTTPClient http;
-  char url[] = "http://ssh.sonicpix.ro/matrix/read.php?m=1";
+  char url[] = "http://ssh.sonicpix.ro/matrix/read.php?screen=music";
+  http.begin(url);
+  http.setTimeout(5000);
+
+  int httpResponseCode = http.GET();
+
+  if (httpResponseCode == 200)
+  {
+    String payload = http.getString();
+    show_text(payload);
+  }
+  else
+  {
+    show_text(http.errorToString(httpResponseCode));
+  }
+  http.end();
+}
+
+void show_custom_text_scroll()
+{
+  HTTPClient http;
+  char url[] = "http://ssh.sonicpix.ro/matrix/read.php?screen=custom";
   http.begin(url);
   http.setTimeout(5000);
 
@@ -287,8 +308,9 @@ void show_random_gif()
 void loop()
 {
   show_random_gif();
-  show_remote_text_scroll();
+  show_custom_text_scroll();
   show_time();
-  show_remote_text();
+  show_music();
+  show_joke();
   checkNetworking();
 }
