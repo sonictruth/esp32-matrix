@@ -53,7 +53,8 @@ void show_text(const String &text)
             }
             if (token == NULL)
             {
-                break; // No more tokens end loop
+                dma_display->clearScreen();
+                break; // No more tokens exit
             }
             if (sscanf(token, "(%d,%d,%d)", &r, &g, &b) == 3)
             {

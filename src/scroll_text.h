@@ -41,6 +41,7 @@ void scroll_text(const String &text, uint16_t color)
             textXPosition -= 1;
             if (textXPosition + w <= -PANEL_RES_X)
             {
+                dma_display->clearScreen();
                 break;
             }
         }

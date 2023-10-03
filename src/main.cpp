@@ -279,7 +279,7 @@ void checkNetworking()
 
 void show_random_gif()
 {
-  show_gif(gifFiles[random(0, gifFilesCount)], 3);
+  show_gif(gifFiles[random(0, gifFilesCount)], 2);
 }
 
 void loop()
