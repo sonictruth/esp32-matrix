@@ -261,8 +261,7 @@ void show_time()
 {
   char englishTime[100];
   char final[150];
-  char prefix[] = " The time is ";
-  char pause[] = " ... ";;
+
   getTimeEnglish(englishTime, esp32rtc.getHour(), esp32rtc.getMinute());
 
   sprintf(final, " ... The time is %s ... ", englishTime);
