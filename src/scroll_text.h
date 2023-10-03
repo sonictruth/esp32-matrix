@@ -14,7 +14,7 @@ void scroll_text(const String &text, uint16_t color)
 {
 
     unsigned long isScrollAnimationDue = 0;
-    int delayScrollAnimation = 30;
+    int delayScrollAnimation = 40;
 
     int fontSize = 20;
 
