@@ -69,7 +69,7 @@ public:
     {
         effects->ClearFrame();
         effects->RandomPalette();
-        currentItem = items[random(0, PATTERN_COUNT - 1)];
+        currentItem = items[random(0, PATTERN_COUNT)];
         currentItem->start();
     }
     void loadNextPattern()

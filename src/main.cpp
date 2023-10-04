@@ -300,17 +300,25 @@ void checkNetworking()
   checkUpdateMode();
 }
 
-void show_random_gif()
+void show_random_numbered_gif(char *prefix, int max)
 {
-  show_gif(gifFiles[random(0, gifFilesCount)], 2);
+  char buffer[40];
+  sprintf(buffer, "/%s%d.gif", prefix, random(1, max + 1));
+  show_gif(buffer, 1);
 }
 
 void loop()
 {
-  show_random_gif();
+
   show_custom_text_scroll();
+  show_random_numbered_gif("w", 4);
+
   show_time();
+  show_random_numbered_gif("t", 1);
+
   show_music();
-  show_joke();
+  show_random_numbered_gif("m", 4);
+
   checkNetworking();
+  show_random_numbered_gif("j", 2);
 }

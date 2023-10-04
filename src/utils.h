@@ -7,9 +7,9 @@ extern MatrixPanel_I2S_DMA *dma_display;
 uint16_t getRandomColor()
 {
   return dma_display->color565(
-      random(128, 255),
-      random(128, 255),
-      random(1, 127));
+      random(128, 256),
+      random(128, 256),
+      random(1, 128));
 }
 
 void getTimeEnglish(char *result, int h, int m)
