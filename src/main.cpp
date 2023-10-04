@@ -26,6 +26,7 @@ String apName = "Matrix";
 String apPassword = "12345678";
 
 int buttonPin = 11;
+int loopCounter = 0;
 
 MatrixPanel_I2S_DMA *dma_display = nullptr;
 GFXcanvas16 *canvas = nullptr;
@@ -215,8 +216,9 @@ void setup()
   showStatus(F("Matrix OK"));
 }
 
-void show_joke()
+void show_jokes()
 {
+  dma_display->clearScreen();
   HTTPClient http;
   char url[] = "http://ssh.sonicpix.ro/matrix/read.php?screen=joke";
   http.begin(url);
@@ -238,6 +240,7 @@ void show_joke()
 
 void show_music()
 {
+  dma_display->clearScreen();
   HTTPClient http;
   char url[] = "http://ssh.sonicpix.ro/matrix/read.php?screen=music";
   http.begin(url);
@@ -259,6 +262,7 @@ void show_music()
 
 void show_custom_text_scroll()
 {
+  dma_display->clearScreen();
   HTTPClient http;
   char url[] = "http://ssh.sonicpix.ro/matrix/read.php?screen=custom";
   http.begin(url);
@@ -309,16 +313,29 @@ void show_random_numbered_gif(char *prefix, int max)
 
 void loop()
 {
-
-  show_custom_text_scroll();
-  show_random_numbered_gif("w", 4);
-
-  show_time();
-  show_random_numbered_gif("t", 1);
-
-  show_music();
-  show_random_numbered_gif("m", 4);
-
+  switch (loopCounter)
+  {
+  case 0:
+    show_custom_text_scroll();
+    show_random_numbered_gif("w", 4);
+    break;
+  case 1:
+    show_time();
+    show_random_numbered_gif("t", 1);
+    break;
+  case 2:
+    show_music();
+    show_random_numbered_gif("m", 4);
+    break;
+  case 3:
+    show_jokes();
+    show_random_numbered_gif("j", 2);
+    break;
+  }
   checkNetworking();
-  show_random_numbered_gif("j", 2);
+  loopCounter++;
+  if (loopCounter > 3)
+  {
+    loopCounter = 0;
+  }
 }
