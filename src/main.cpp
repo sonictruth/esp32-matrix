@@ -40,9 +40,6 @@ AutoConnectConfig PortalConfig;
 WiFiClient client;
 HTTPClient http;
 
-char gifFiles[30][14] = {};
-int gifFilesCount = 0;
-
 void showStatus(const String &status)
 {
   dma_display->clearScreen();
@@ -56,7 +53,7 @@ void showStatus(const String &status)
   delay(1000);
 }
 
-void stop()
+void restart()
 {
   showStatus(F("Restaring"));
   delay(5000);
@@ -118,7 +115,7 @@ void setupTime()
   if (!getLocalTime(&timeinfo))
   {
     showStatus(F("Failed to get time"));
-    stop();
+    restart();
   }
   else
   {
@@ -146,10 +143,13 @@ void setupNetworking()
 {
   showStatus(F("Connecting"));
 
+  // uint8_t New_MAC_Address[] = {0x10, 0xAA, 0xBB, 0xCC, 0x33, 0xF5};
+  // esp_wifi_set_mac(WIFI_IF_STA, New_MAC_Address);
+
   PortalConfig.apid = apName;
   PortalConfig.password = apPassword;
   PortalConfig.title = "Configure WiFi";
-  PortalConfig.menuItems = AC_MENUITEM_CONFIGNEW;
+  PortalConfig.menuItems = AC_MENUITEM_HOME | AC_MENUITEM_CONFIGNEW | AC_MENUITEM_DELETESSID | AC_MENUITEM_DEVINFO | AC_MENUITEM_UPDATE | AC_MENUITEM_OPENSSIDS;
   PortalConfig.autoSave = AC_SAVECREDENTIAL_ALWAYS;
   PortalConfig.autoReconnect = true;
 
@@ -163,7 +163,7 @@ void setupNetworking()
   else
   {
     showStatus(F("Portal Error"));
-    stop();
+    restart();
   }
 
   while (WiFi.status() != WL_CONNECTED)
@@ -179,19 +179,7 @@ void setupStorage()
   if (!SPIFFS.begin())
   {
     showStatus(F("SPIFFS Mount Failed"));
-    stop();
-  }
-  File root = SPIFFS.open("/");
-  File file = root.openNextFile();
-
-  while (file && gifFilesCount < 30)
-  {
-    if (strstr(file.name(), ".gif") != NULL)
-    {
-      strcpy(gifFiles[gifFilesCount], file.path());
-      gifFilesCount++;
-    }
-    file = root.openNextFile();
+    restart();
   }
 }
 
@@ -230,6 +218,7 @@ void show_jokes()
   {
     String payload = http.getString();
     show_text(payload);
+    show_random_numbered_gif((char *)"j", 2);
   }
   else
   {
@@ -252,6 +241,7 @@ void show_music()
   {
     String payload = http.getString();
     show_text(payload);
+    show_random_numbered_gif((char *)"m", 4);
   }
   else
   {
@@ -274,6 +264,7 @@ void show_custom_text_scroll()
   {
     String payload = http.getString();
     scroll_text(payload, getRandomColor());
+    show_random_numbered_gif((char *)"w", 4);
   }
   else
   {
@@ -288,9 +279,9 @@ void show_time()
   char final[150];
 
   getTimeEnglish(englishTime, esp32rtc.getHour(), esp32rtc.getMinute());
-
   sprintf(final, " ... The time is %s ... ", englishTime);
   show_text(final);
+  show_random_numbered_gif((char *)"t", 1);
 }
 
 void checkNetworking()
@@ -298,17 +289,9 @@ void checkNetworking()
   if (WiFi.status() != WL_CONNECTED)
   {
     show_text("NOT CONNECTED");
-    WiFi.disconnect();
-    WiFi.reconnect();
+    restart();
   }
   checkUpdateMode();
-}
-
-void show_random_numbered_gif(char *prefix, int max)
-{
-  char buffer[40];
-  sprintf(buffer, "/%s%d.gif", prefix, random(1, max + 1));
-  show_gif(buffer, 1);
 }
 
 void loop()
@@ -317,19 +300,15 @@ void loop()
   {
   case 0:
     show_custom_text_scroll();
-    show_random_numbered_gif("w", 4);
     break;
   case 1:
     show_time();
-    show_random_numbered_gif("t", 1);
     break;
   case 2:
     show_music();
-    show_random_numbered_gif("m", 4);
     break;
   case 3:
     show_jokes();
-    show_random_numbered_gif("j", 2);
     break;
   }
   checkNetworking();

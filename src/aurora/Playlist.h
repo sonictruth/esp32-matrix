@@ -11,7 +11,6 @@
 #include "PatternElectricMandala.h"
 #include "PatternSpiral.h"
 #include "PatternLife.h"
-#include "PatternMaze.h"
 #include "PatternFlock.h"
 #include "PatternRadar.h"
 #include "PatternSwirl.h"
@@ -27,7 +26,6 @@ private:
     PatternSnake patternSnake;
     PatternFlowField patternFlowField;
     PatternElectricMandala patternElectricMandala;
-
     PatternLife patternLife;
     PatternFlock patternFlock;
     PatternSwirl patternSwirl;
@@ -55,12 +53,6 @@ private:
 
     void renderFrame()
     {
-        /*
-        EVERY_N_SECONDS(10)
-        {
-            loadPattern();
-        }
-        */
         renderingDelay = currentItem->drawFrame();
     }
 

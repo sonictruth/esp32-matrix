@@ -161,3 +161,10 @@ void show_gif(char *name, int times)
     count++;
   }
 }
+
+void show_random_numbered_gif(char *prefix, int max)
+{
+  char buffer[40];
+  sprintf(buffer, "/%s%d.gif", prefix, random(1, max + 1));
+  show_gif(buffer, 1);
+}
