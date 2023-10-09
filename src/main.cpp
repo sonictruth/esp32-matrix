@@ -50,6 +50,9 @@ void showStatus(const String &status)
   dma_display->print(status);
   dma_display->setFont();
   dma_display->setTextWrap(false);
+#ifdef S2_MINI_DEBUG
+  Serial.println(status);
+#endif
   delay(1000);
 }
 
@@ -125,6 +128,11 @@ void setupTime()
 
 void checkUpdateMode()
 {
+#ifdef S2_MINI_DEBUG
+#pragma message "!!! UPDATE MODE DISABLED"
+  Serial.println("...");
+  return;
+#endif
   if (digitalRead(buttonPin) == LOW)
   {
     webServer.on("/", []()
@@ -143,13 +151,17 @@ void setupNetworking()
 {
   showStatus(F("Connecting"));
 
-  // uint8_t New_MAC_Address[] = {0x10, 0xAA, 0xBB, 0xCC, 0x33, 0xF5};
-  // esp_wifi_set_mac(WIFI_IF_STA, New_MAC_Address);
+  uint8_t a = rand() % 256;
+  uint8_t b = rand() % 256;
+  uint8_t c = rand() % 256;
+  uint8_t newMACAddress[] = {0x32, 0xAE, 0xA4, a, b, c};
+  WiFi.mode(WIFI_STA);
+  esp_wifi_set_mac(WIFI_IF_STA, &newMACAddress[0]);
 
   PortalConfig.apid = apName;
   PortalConfig.password = apPassword;
   PortalConfig.title = "Configure WiFi";
-  PortalConfig.menuItems = AC_MENUITEM_HOME | AC_MENUITEM_CONFIGNEW | AC_MENUITEM_DELETESSID | AC_MENUITEM_DEVINFO | AC_MENUITEM_UPDATE | AC_MENUITEM_OPENSSIDS;
+  PortalConfig.menuItems = AC_MENUITEM_CONFIGNEW | AC_MENUITEM_DELETESSID | AC_MENUITEM_DEVINFO | AC_MENUITEM_UPDATE | AC_MENUITEM_OPENSSIDS;
   PortalConfig.autoSave = AC_SAVECREDENTIAL_ALWAYS;
   PortalConfig.autoReconnect = true;
 
@@ -171,6 +183,8 @@ void setupNetworking()
     delay(500);
     showStatus(F("..."));
   }
+  showStatus(WiFi.macAddress());
+  showStatus(WiFi.localIP().toString());
   showStatus("Done");
 }
 
@@ -186,9 +200,10 @@ void setupStorage()
 void setup()
 {
   Serial.begin(115200);
+  delay(5000);
   Serial.println(F("Serial Started"));
   pinMode(buttonPin, INPUT);
-
+  randomSeed(esp_random());
   setupDisplay();
   setupNetworking();
 
@@ -218,7 +233,7 @@ void show_jokes()
   {
     String payload = http.getString();
     show_text(payload);
-    show_random_numbered_gif((char *)"j", 2);
+    show_random_numbered_gif((char *)"j", 5);
   }
   else
   {
@@ -277,11 +292,10 @@ void show_time()
 {
   char englishTime[100];
   char final[150];
-
   getTimeEnglish(englishTime, esp32rtc.getHour(), esp32rtc.getMinute());
   sprintf(final, " ... The time is %s ... ", englishTime);
   show_text(final);
-  show_random_numbered_gif((char *)"t", 1);
+  show_random_numbered_gif((char *)"t", 4);
 }
 
 void checkNetworking()
