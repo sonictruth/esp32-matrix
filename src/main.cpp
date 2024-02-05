@@ -316,13 +316,12 @@ void loop()
     show_custom_text_scroll();
     break;
   case 1:
-    show_time();
+    show_jokes();
     break;
   case 2:
     show_music();
     break;
   case 3:
-    show_jokes();
     break;
   }
   checkNetworking();
