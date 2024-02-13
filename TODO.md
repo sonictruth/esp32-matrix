@@ -1,2 +1,0 @@
-- random patern ? fire circles
-- mk gifs eye closing contrast 
